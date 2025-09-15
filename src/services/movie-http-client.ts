@@ -3,8 +3,45 @@ import type { Movie, MovieResponse } from "../types/movie";
 const API_BASE_URL = 'https://api.themoviedb.org/3';
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 
+interface CacheEntry {
+  data: any;
+  timestamp: number;
+}
+
 class MovieHttpClient {
+  private cache = new Map<string, CacheEntry>();
+  private readonly CACHE_DURATION = 5 * 60 * 1000;
+
+  private isExpired(timestamp: number): boolean {
+    return Date.now() - timestamp > this.CACHE_DURATION;
+  }
+
+  private getFromCache(key: string): any | null {
+    const entry = this.cache.get(key);
+    if (entry && !this.isExpired(entry.timestamp)) {
+      return entry.data;
+    }
+    if (entry) {
+      this.cache.delete(key);
+    }
+    return null;
+  }
+
+  private setCache(key: string, data: any): void {
+    this.cache.set(key, {
+      data,
+      timestamp: Date.now()
+    });
+  }
+
   private async fetchFromAPI(endpoint: string): Promise<any> {
+    const cacheKey = endpoint;
+    const cachedData = this.getFromCache(cacheKey);
+    
+    if (cachedData) {
+      return cachedData;
+    }
+
     const url = `${API_BASE_URL}${endpoint}${endpoint.includes('?') ? '&' : '?'}api_key=${API_KEY}`;
     
     const response = await fetch(url);
@@ -13,7 +50,9 @@ class MovieHttpClient {
       throw new Error(`API request failed: ${response.statusText}`);
     }
     
-    return response.json();
+    const data = await response.json();
+    this.setCache(cacheKey, data);
+    return data;
   }
 
   async getPopularMovies(page: number = 1): Promise<MovieResponse> {
