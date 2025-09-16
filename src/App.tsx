@@ -1,4 +1,3 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useAuthStore } from './store/authStore'
 import { useLogout } from './hooks/useAuth'
 import { Login } from './components/Login'
@@ -6,14 +5,6 @@ import { Signup } from './components/Signup'
 import { useState } from 'react'
 import './App.css'
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 5 * 60 * 1000,
-      gcTime: 10 * 60 * 1000,
-    },
-  },
-})
 
 function App() {
   const { 
@@ -36,7 +27,6 @@ function App() {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
       <div className="App">
         <header className="App-header">
           <h1>Movie App</h1>
@@ -98,7 +88,6 @@ function App() {
           )}
         </main>
       </div>
-    </QueryClientProvider>
   )
 }
 
