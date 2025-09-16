@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { authHttpClient } from './auth-http-client'
+import { authHttpClient } from '../services/auth-http-client'
 import type { AuthResponse, LoginCredentials, SignupCredentials } from '../types/auth'
 
 const mockAuthResponse: AuthResponse = {

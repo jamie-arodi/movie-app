@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { movieHttpClient } from './movie-http-client'
+import { movieHttpClient } from '../services/movie-http-client'
 import type { MovieResponse } from '../types/movie'
 
 const mockMovieResponse: MovieResponse = {
