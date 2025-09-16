@@ -11,7 +11,9 @@ export const Signup: React.FC<SignupProps> = ({ onSuccess }) => {
   const [credentials, setCredentials] = useState<SignupFormData>({
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    firstName: '',
+    lastName: ''
   })
   const [error, setError] = useState<string | null>(null)
 
@@ -52,6 +54,32 @@ export const Signup: React.FC<SignupProps> = ({ onSuccess }) => {
     <div className="signup-form">
       <h2>Sign Up</h2>
       <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label htmlFor="firstName">First Name:</label>
+          <input
+            type="text"
+            id="firstName"
+            name="firstName"
+            value={credentials.firstName}
+            onChange={handleChange}
+            required
+            disabled={signupMutation.isPending}
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="lastName">Last Name:</label>
+          <input
+            type="text"
+            id="lastName"
+            name="lastName"
+            value={credentials.lastName}
+            onChange={handleChange}
+            required
+            disabled={signupMutation.isPending}
+          />
+        </div>
+
         <div className="form-group">
           <label htmlFor="email">Email:</label>
           <input

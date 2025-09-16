@@ -12,6 +12,8 @@ export interface AuthUser {
     email: string;
     email_verified: boolean;
     name?: string;
+    firstName?: string;
+    lastName?: string;
     phone_verified: boolean;
     sub: string;
   };
@@ -37,7 +39,8 @@ export interface LoginCredentials {
 export interface SignupCredentials {
   email: string;
   password: string;
-  name?: string;
+  firstName: string;
+  lastName: string;
 }
 
 export interface SignupFormData extends SignupCredentials {

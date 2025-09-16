@@ -38,7 +38,7 @@ function App() {
             </nav>
           ) : (
             <nav>
-              <span>Welcome back, {user?.email}!</span>
+              <span>Welcome back, {user?.user_metadata?.firstName || user?.email}!</span>
               <button 
                 onClick={handleLogoutClick}
                 disabled={logoutMutation.isPending}
@@ -66,15 +66,21 @@ function App() {
           
           {currentView === 'home' && isAuthenticated && (
             <div>
-              <h2>Welcome to your Movie App!</h2>
+              <h2>Welcome to your Movie App{user?.user_metadata?.firstName ? `, ${user.user_metadata.firstName}` : ''}!</h2>
               <p>You are now logged in and can browse movies.</p>
               <div className="user-info">
                 <h3>User Information:</h3>
                 <p><strong>Email:</strong> {user?.email}</p>
                 <p><strong>Role:</strong> {user?.role}</p>
                 <p><strong>ID:</strong> {user?.id}</p>
+                {user?.user_metadata?.firstName && (
+                  <p><strong>First Name:</strong> {user.user_metadata.firstName}</p>
+                )}
+                {user?.user_metadata?.lastName && (
+                  <p><strong>Last Name:</strong> {user.user_metadata.lastName}</p>
+                )}
                 {user?.user_metadata?.name && (
-                  <p><strong>Name:</strong> {user.user_metadata.name}</p>
+                  <p><strong>Full Name:</strong> {user.user_metadata.name}</p>
                 )}
               </div>
             </div>

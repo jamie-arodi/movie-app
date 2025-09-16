@@ -54,14 +54,13 @@ class AuthHttpClient {
   async signup(credentials: SignupCredentials): Promise<AuthResponse> {
     const body: any = {
       email: credentials.email,
-      password: credentials.password
+      password: credentials.password,
+      data: {
+        firstName: credentials.firstName,
+        lastName: credentials.lastName,
+        name: `${credentials.firstName} ${credentials.lastName}`
+      }
     };
-
-    if (credentials.name) {
-      body.data = {
-        name: credentials.name
-      };
-    }
 
     return this.makeRequest('/auth/v1/signup', body);
   }
