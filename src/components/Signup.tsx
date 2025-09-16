@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useSignup } from '../hooks/useAuth'
+import { useAuthStore } from '../store/authStore'
 import type { SignupFormData } from '../types/auth'
 
 interface SignupProps {
@@ -12,14 +13,17 @@ export const Signup: React.FC<SignupProps> = ({ onSuccess }) => {
     password: '',
     confirmPassword: ''
   })
+  const [error, setError] = useState<string | null>(null)
 
   const signupMutation = useSignup()
+  const { setCurrentView } = useAuthStore()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError(null)
     
     if (credentials.password !== credentials.confirmPassword) {
-      alert('Passwords do not match')
+      setError('Passwords do not match')
       return
     }
 
@@ -27,8 +31,8 @@ export const Signup: React.FC<SignupProps> = ({ onSuccess }) => {
       const { confirmPassword, ...signupData } = credentials
       await signupMutation.mutateAsync(signupData)
       onSuccess?.()
-    } catch (error) {
-      // Error is handled by the useSignup hook
+    } catch (error: any) {
+      setError(error?.msg || 'Signup failed')
     }
   }
 
@@ -38,6 +42,10 @@ export const Signup: React.FC<SignupProps> = ({ onSuccess }) => {
       ...prev,
       [name]: value
     }))
+  }
+
+  const handleBackToHome = () => {
+    setCurrentView('home')
   }
 
   return (
@@ -83,19 +91,30 @@ export const Signup: React.FC<SignupProps> = ({ onSuccess }) => {
           />
         </div>
 
-        {signupMutation.isError && (
+        {error && (
           <div className="error-message">
-            {signupMutation.error?.message || 'Signup failed'}
+            {error}
           </div>
         )}
 
-        <button 
-          type="submit" 
-          disabled={signupMutation.isPending}
-          className="submit-button"
-        >
-          {signupMutation.isPending ? 'Signing up...' : 'Sign Up'}
-        </button>
+        <div className="form-buttons">
+          <button 
+            type="submit" 
+            disabled={signupMutation.isPending}
+            className="submit-button"
+          >
+            {signupMutation.isPending ? 'Signing up...' : 'Sign Up'}
+          </button>
+          
+          <button 
+            type="button"
+            onClick={handleBackToHome}
+            className="secondary-button"
+            disabled={signupMutation.isPending}
+          >
+            Back to Home
+          </button>
+        </div>
       </form>
     </div>
   )

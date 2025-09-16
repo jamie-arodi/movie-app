@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useLogin } from '../hooks/useAuth'
+import { useAuthStore } from '../store/authStore'
 import type { LoginCredentials } from '../types/auth'
 
 interface LoginProps {
@@ -11,17 +12,20 @@ export const Login: React.FC<LoginProps> = ({ onSuccess }) => {
     email: '',
     password: ''
   })
+  const [error, setError] = useState<string | null>(null)
 
   const loginMutation = useLogin()
+  const { setCurrentView } = useAuthStore()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError(null)
     
     try {
       await loginMutation.mutateAsync(credentials)
       onSuccess?.()
-    } catch (error) {
-      // Error is handled by the useLogin hook
+    } catch (error: any) {
+      setError(error?.msg || 'Login failed')
     }
   }
 
@@ -31,6 +35,10 @@ export const Login: React.FC<LoginProps> = ({ onSuccess }) => {
       ...prev,
       [name]: value
     }))
+  }
+
+  const handleBackToHome = () => {
+    setCurrentView('home')
   }
 
   return (
@@ -63,19 +71,30 @@ export const Login: React.FC<LoginProps> = ({ onSuccess }) => {
           />
         </div>
 
-        {loginMutation.isError && (
+        {error && (
           <div className="error-message">
-            {loginMutation.error?.message || 'Login failed'}
+            {error}
           </div>
         )}
 
-        <button 
-          type="submit" 
-          disabled={loginMutation.isPending}
-          className="submit-button"
-        >
-          {loginMutation.isPending ? 'Logging in...' : 'Login'}
-        </button>
+        <div className="form-buttons">
+          <button 
+            type="submit" 
+            disabled={loginMutation.isPending}
+            className="submit-button"
+          >
+            {loginMutation.isPending ? 'Logging in...' : 'Login'}
+          </button>
+          
+          <button 
+            type="button"
+            onClick={handleBackToHome}
+            className="secondary-button"
+            disabled={loginMutation.isPending}
+          >
+            Back to Home
+          </button>
+        </div>
       </form>
     </div>
   )

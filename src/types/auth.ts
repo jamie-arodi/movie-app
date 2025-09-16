@@ -45,6 +45,7 @@ export interface SignupFormData extends SignupCredentials {
 }
 
 export interface AuthError {
-  message: string;
-  status?: number;
+  code: number;
+  error_code: string;
+  msg: string;
 }

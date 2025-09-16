@@ -21,9 +21,22 @@ class AuthHttpClient {
     });
 
     if (!response.ok) {
+      let errorData;
+      try {
+        errorData = await response.json();
+      } catch {
+        // If parsing fails, create a generic error
+        errorData = {
+          code: response.status,
+          error_code: 'http_error',
+          msg: `Authentication failed`
+        };
+      }
+      
       const error: AuthError = {
-        message: `Authentication failed: ${response.statusText}`,
-        status: response.status
+        code: errorData.code || response.status,
+        error_code: errorData.error_code || 'unknown_error',
+        msg: errorData.msg || `Authentication failed`
       };
       throw error;
     }
@@ -63,9 +76,22 @@ class AuthHttpClient {
     });
 
     if (!response.ok) {
+      let errorData;
+      try {
+        errorData = await response.json();
+      } catch {
+        // If parsing fails, create a generic error
+        errorData = {
+          code: response.status,
+          error_code: 'http_error',
+          msg: `Logout failed`
+        };
+      }
+      
       const error: AuthError = {
-        message: `Logout failed: ${response.statusText}`,
-        status: response.status
+        code: errorData.code || response.status,
+        error_code: errorData.error_code || 'logout_error',
+        msg: errorData.msg || `Logout failed`
       };
       throw error;
     }
