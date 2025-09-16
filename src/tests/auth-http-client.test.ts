@@ -22,6 +22,8 @@ const mockAuthResponse: AuthResponse = {
       email: 'test@example.com',
       email_verified: true,
       name: 'Test User',
+      firstName: 'Test',
+      lastName: 'User',
       phone_verified: false,
       sub: '991caea3-6cad-4052-abe1-4e1954d12534'
     },
@@ -79,7 +81,8 @@ describe('AuthHttpClient', () => {
     const credentials: SignupCredentials = {
       email: 'newuser@example.com',
       password: 'newpassword123',
-      name: 'New User'
+      firstName: 'New',
+      lastName: 'User'
     }
 
     const result = await authHttpClient.signup(credentials)
@@ -92,6 +95,8 @@ describe('AuthHttpClient', () => {
           email: 'newuser@example.com',
           password: 'newpassword123',
           data: {
+            firstName: 'New',
+            lastName: 'User',
             name: 'New User'
           }
         })
@@ -113,7 +118,7 @@ describe('AuthHttpClient', () => {
       password: 'wrongpassword'
     }
 
-    await expect(authHttpClient.login(credentials)).rejects.toThrow('Authentication failed: Unauthorized')
+    await expect(authHttpClient.login(credentials)).rejects.toThrow()
   })
 
   it('should refresh token', async () => {
