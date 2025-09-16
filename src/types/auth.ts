@@ -40,6 +40,10 @@ export interface SignupCredentials {
   name?: string;
 }
 
+export interface SignupFormData extends SignupCredentials {
+  confirmPassword: string;
+}
+
 export interface AuthError {
   message: string;
   status?: number;
