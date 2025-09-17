@@ -1,7 +1,8 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { useAuthStore } from '../store/authStore'
 import { useLogout } from '../hooks/useAuth'
 import { usePopularMovies } from '../hooks/useMovies'
+import { useSearchMovies } from '../hooks/useSearchMovies'
 import { Search, Film, LogOut, User, Menu, Star, Calendar } from 'lucide-react'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
@@ -12,24 +13,34 @@ export const Home: React.FC = () => {
   const { user } = useAuthStore()
   const [logoutError, setLogoutError] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [selectedMovie, setSelectedMovie] = useState<any>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const logoutMutation = useLogout()
 
+  // Debounce search query to avoid excessive API calls
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery.trim())
+    }, 500) // 500ms delay
+
+    return () => clearTimeout(timer)
+  }, [searchQuery])
+
   const { data: moviesData, isLoading: moviesLoading, error: moviesError } = usePopularMovies(1)
+  const { data: searchData, isLoading: searchLoading, error: searchError } = useSearchMovies(debouncedSearchQuery)
 
-  //this should filter movies based on genre. Actual movie searches should be queried from the DB
-  const filteredMovies = useMemo(() => {
-    if (!moviesData?.results) return []
+  // Use search results if there's a search query, otherwise use popular movies
+  const displayedMovies = useMemo(() => {
+    if (debouncedSearchQuery && searchData?.results) {
+      return searchData.results
+    }
+    return moviesData?.results || []
+  }, [debouncedSearchQuery, searchData, moviesData])
 
-    if (!searchQuery) return moviesData.results
-
-    return moviesData.results.filter(movie =>
-      movie.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      movie.overview.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-  }, [moviesData, searchQuery])
+  const isLoading = debouncedSearchQuery ? searchLoading : moviesLoading
+  const currentError = debouncedSearchQuery ? searchError : moviesError
 
   const handleLogoutClick = async () => {
     setLogoutError(null)
@@ -156,10 +167,10 @@ export const Home: React.FC = () => {
       </section>
 
       {/* Error Display */}
-      {(logoutError || moviesError) && (
+      {(logoutError || currentError) && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
           <div className="bg-red-900/50 border border-red-700 text-red-200 px-4 py-3 rounded-md">
-            {logoutError || `Failed to load movies: ${moviesError?.message}`}
+            {logoutError || `Failed to load movies: ${currentError?.message}`}
           </div>
         </div>
       )}
@@ -167,13 +178,15 @@ export const Home: React.FC = () => {
       {/* Movies Section */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-8">
-          <h2 className="text-2xl font-bold mb-2">Popular Movies</h2>
+          <h2 className="text-2xl font-bold mb-2">
+            {debouncedSearchQuery ? 'Search Results' : 'Popular Movies'}
+          </h2>
           <p className="text-gray-400">
-            {searchQuery ? `Search results for "${searchQuery}"` : 'Trending now'}
+            {debouncedSearchQuery ? `Results for "${debouncedSearchQuery}"` : 'Trending now'}
           </p>
         </div>
 
-        {moviesLoading ? (
+        {isLoading ? (
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
             {[...Array(12)].map((_, i) => (
               <div key={i} className="animate-pulse">
@@ -185,9 +198,9 @@ export const Home: React.FC = () => {
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
-            {filteredMovies.map((movie) => (
-              <div
-                key={movie.id}
+            {displayedMovies.map((movie: Movie) => (
+              <div 
+                key={movie.id} 
                 className="group cursor-pointer"
                 onClick={() => handleMovieClick(movie)}
               >
@@ -203,14 +216,14 @@ export const Home: React.FC = () => {
                       <Film className="h-12 w-12 text-gray-600" />
                     </div>
                   )}
-
+                  
                   {/* Rating Badge */}
                   <div className="absolute top-2 right-2 bg-black/80 rounded-full px-2 py-1 flex items-center space-x-1">
                     <Star className="h-3 w-3 text-yellow-400 fill-current" />
                     <span className="text-xs font-medium">{movie.vote_average?.toFixed(1)}</span>
                   </div>
                 </div>
-
+                
                 <div>
                   <h3 className="font-semibold text-sm mb-1 line-clamp-2 group-hover:text-red-500 transition-colors">
                     {movie.title}
@@ -225,16 +238,14 @@ export const Home: React.FC = () => {
           </div>
         )}
 
-        {filteredMovies.length === 0 && !moviesLoading && searchQuery && (
+        {displayedMovies.length === 0 && !isLoading && debouncedSearchQuery && (
           <div className="text-center py-12">
             <Film className="h-16 w-16 text-gray-600 mx-auto mb-4" />
             <h3 className="text-xl font-semibold mb-2">No movies found</h3>
             <p className="text-gray-400">Try searching for something else</p>
           </div>
         )}
-      </main>
-
-      {/* Footer */}
+      </main>      {/* Footer */}
       <footer className="bg-gray-900 border-t border-gray-800 mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -277,7 +288,7 @@ export const Home: React.FC = () => {
               <Film className="h-5 w-5 text-red-500" />
               <span className="font-semibold">Movie App</span>
             </div>
-            <p>&copy; 2024 Movie App. All rights reserved.</p>
+            <p>&copy; 2025 Movie App. All rights reserved.</p>
           </div>
         </div>
       </footer>
