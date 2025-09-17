@@ -51,11 +51,11 @@ export const Signup: React.FC<SignupProps> = ({ onSuccess }) => {
   }
 
   return (
-    <div className="signup-form">
-      <h2>Sign Up</h2>
+    <div className="max-w-md mx-auto p-8 border border-gray-300 rounded-lg bg-gray-50">
+      <h2 className="text-xl font-bold mb-6 text-center">Sign Up</h2>
       <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="firstName">First Name:</label>
+        <div className="mb-4 text-left">
+          <label htmlFor="firstName" className="block mb-2 font-bold">First Name:</label>
           <input
             type="text"
             id="firstName"
@@ -64,11 +64,12 @@ export const Signup: React.FC<SignupProps> = ({ onSuccess }) => {
             onChange={handleChange}
             required
             disabled={signupMutation.isPending}
+            className="w-full p-2 border border-gray-300 rounded text-base box-border focus:outline-none focus:border-cyan-400"
           />
         </div>
 
-        <div className="form-group">
-          <label htmlFor="lastName">Last Name:</label>
+        <div className="mb-4 text-left">
+          <label htmlFor="lastName" className="block mb-2 font-bold">Last Name:</label>
           <input
             type="text"
             id="lastName"
@@ -77,11 +78,12 @@ export const Signup: React.FC<SignupProps> = ({ onSuccess }) => {
             onChange={handleChange}
             required
             disabled={signupMutation.isPending}
+            className="w-full p-2 border border-gray-300 rounded text-base box-border focus:outline-none focus:border-cyan-400"
           />
         </div>
 
-        <div className="form-group">
-          <label htmlFor="email">Email:</label>
+        <div className="mb-4 text-left">
+          <label htmlFor="email" className="block mb-2 font-bold">Email:</label>
           <input
             type="email"
             id="email"
@@ -90,11 +92,12 @@ export const Signup: React.FC<SignupProps> = ({ onSuccess }) => {
             onChange={handleChange}
             required
             disabled={signupMutation.isPending}
+            className="w-full p-2 border border-gray-300 rounded text-base box-border focus:outline-none focus:border-cyan-400"
           />
         </div>
         
-        <div className="form-group">
-          <label htmlFor="password">Password:</label>
+        <div className="mb-4 text-left">
+          <label htmlFor="password" className="block mb-2 font-bold">Password:</label>
           <input
             type="password"
             id="password"
@@ -103,11 +106,12 @@ export const Signup: React.FC<SignupProps> = ({ onSuccess }) => {
             onChange={handleChange}
             required
             disabled={signupMutation.isPending}
+            className="w-full p-2 border border-gray-300 rounded text-base box-border focus:outline-none focus:border-cyan-400"
           />
         </div>
 
-        <div className="form-group">
-          <label htmlFor="confirmPassword">Confirm Password:</label>
+        <div className="mb-4 text-left">
+          <label htmlFor="confirmPassword" className="block mb-2 font-bold">Confirm Password:</label>
           <input
             type="password"
             id="confirmPassword"
@@ -116,20 +120,21 @@ export const Signup: React.FC<SignupProps> = ({ onSuccess }) => {
             onChange={handleChange}
             required
             disabled={signupMutation.isPending}
+            className="w-full p-2 border border-gray-300 rounded text-base box-border focus:outline-none focus:border-cyan-400"
           />
         </div>
 
         {error && (
-          <div className="error-message">
+          <div className="text-red-600 bg-red-100 border border-red-300 px-3 py-2 rounded my-4">
             {error}
           </div>
         )}
 
-        <div className="form-buttons">
+        <div className="flex gap-4 mt-6">
           <button 
             type="submit" 
             disabled={signupMutation.isPending}
-            className="submit-button"
+            className="bg-cyan-400 text-gray-800 border-none px-6 py-3 rounded cursor-pointer font-bold flex-1 hover:bg-cyan-500 disabled:bg-gray-300 disabled:cursor-not-allowed"
           >
             {signupMutation.isPending ? 'Signing up...' : 'Sign Up'}
           </button>
@@ -137,8 +142,8 @@ export const Signup: React.FC<SignupProps> = ({ onSuccess }) => {
           <button 
             type="button"
             onClick={handleBackToHome}
-            className="secondary-button"
             disabled={signupMutation.isPending}
+            className="bg-gray-600 text-white border-none px-6 py-3 rounded cursor-pointer font-bold hover:bg-gray-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
           >
             Back to Home
           </button>

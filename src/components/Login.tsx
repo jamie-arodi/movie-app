@@ -42,11 +42,11 @@ export const Login: React.FC<LoginProps> = ({ onSuccess }) => {
   }
 
   return (
-    <div className="login-form">
-      <h2>Login</h2>
+    <div className="max-w-md mx-auto p-8 border border-gray-300 rounded-lg bg-gray-50">
+      <h2 className="text-xl font-bold mb-6 text-center">Login</h2>
       <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="email">Email:</label>
+        <div className="mb-4 text-left">
+          <label htmlFor="email" className="block mb-2 font-bold">Email:</label>
           <input
             type="email"
             id="email"
@@ -55,11 +55,12 @@ export const Login: React.FC<LoginProps> = ({ onSuccess }) => {
             onChange={handleChange}
             required
             disabled={loginMutation.isPending}
+            className="w-full p-2 border border-gray-300 rounded text-base box-border focus:outline-none focus:border-cyan-400"
           />
         </div>
         
-        <div className="form-group">
-          <label htmlFor="password">Password:</label>
+        <div className="mb-4 text-left">
+          <label htmlFor="password" className="block mb-2 font-bold">Password:</label>
           <input
             type="password"
             id="password"
@@ -68,20 +69,21 @@ export const Login: React.FC<LoginProps> = ({ onSuccess }) => {
             onChange={handleChange}
             required
             disabled={loginMutation.isPending}
+            className="w-full p-2 border border-gray-300 rounded text-base box-border focus:outline-none focus:border-cyan-400"
           />
         </div>
 
         {error && (
-          <div className="error-message">
+          <div className="text-red-600 bg-red-100 border border-red-300 px-3 py-2 rounded my-4">
             {error}
           </div>
         )}
 
-        <div className="form-buttons">
+        <div className="flex gap-4 mt-6">
           <button 
             type="submit" 
             disabled={loginMutation.isPending}
-            className="submit-button"
+            className="bg-cyan-400 text-gray-800 border-none px-6 py-3 rounded cursor-pointer font-bold flex-1 hover:bg-cyan-500 disabled:bg-gray-300 disabled:cursor-not-allowed"
           >
             {loginMutation.isPending ? 'Logging in...' : 'Login'}
           </button>
@@ -89,8 +91,8 @@ export const Login: React.FC<LoginProps> = ({ onSuccess }) => {
           <button 
             type="button"
             onClick={handleBackToHome}
-            className="secondary-button"
             disabled={loginMutation.isPending}
+            className="bg-gray-600 text-white border-none px-6 py-3 rounded cursor-pointer font-bold hover:bg-gray-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
           >
             Back to Home
           </button>
