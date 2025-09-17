@@ -44,7 +44,7 @@ export const Home: React.FC = () => {
             {/* Logo */}
             <div className="flex items-center space-x-2">
               <Film className="h-8 w-8 text-red-500" />
-              <span className="text-xl font-bold">MovieFlix</span>
+              <span className="text-xl font-bold">Movie App</span>
             </div>
 
             {/* Desktop Navigation */}
@@ -57,6 +57,11 @@ export const Home: React.FC = () => {
 
             {/* Search and User Controls */}
             <div className="flex items-center space-x-4">
+              {/* Welcome Message */}
+              <div className="hidden sm:block text-sm text-gray-300">
+                Welcome back, <span className="text-white font-medium">{user?.user_metadata?.firstName || 'User'}</span>
+              </div>
+              
               {/* User Menu */}
               <div className="relative">
                 <Button
@@ -251,9 +256,9 @@ export const Home: React.FC = () => {
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
             <div className="flex items-center justify-center space-x-2 mb-2">
               <Film className="h-5 w-5 text-red-500" />
-              <span className="font-semibold">MovieFlix</span>
+              <span className="font-semibold">Movie App</span>
             </div>
-            <p>&copy; 2024 MovieFlix. All rights reserved.</p>
+            <p>&copy; 2024 Movie App. All rights reserved.</p>
           </div>
         </div>
       </footer>
