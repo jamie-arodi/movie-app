@@ -181,13 +181,13 @@ export const Signup: React.FC<SignupProps> = ({ onSuccess }) => {
 
             <div className="mt-6 text-center">
               <p className="text-gray-400 text-sm">
-                Need to go back?{" "}
+                Already have an account?{" "}
                 <button
                   onClick={handleBackToHome}
                   disabled={signupMutation.isPending}
                   className="text-red-400 hover:text-red-300 underline disabled:text-gray-500 disabled:cursor-not-allowed"
                 >
-                  Return to Home
+                  Return to Login
                 </button>
               </p>
             </div>
