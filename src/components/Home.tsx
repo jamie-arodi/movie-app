@@ -1,6 +1,7 @@
 import React from 'react'
 import { useAuthStore } from '../store/authStore'
 import { useLogout } from '../hooks/useAuth'
+import { usePopularMovies } from '../hooks/useMovies'
 import { useState } from 'react'
 import { Film } from 'lucide-react'
 
@@ -8,6 +9,8 @@ export const Home: React.FC = () => {
   const { user } = useAuthStore()
   const [logoutError, setLogoutError] = useState<string | null>(null)
   const logoutMutation = useLogout()
+
+  const { data: moviesData, isLoading: moviesLoading, error: moviesError } = usePopularMovies(1)
 
   const handleLogoutClick = async () => {
     setLogoutError(null)
@@ -76,12 +79,46 @@ export const Home: React.FC = () => {
             </div>
           </div>
 
-          {/* Coming Soon Content */}
+          {/* Movies Section */}
           <div className="text-center mb-8">
-            <h3 className="text-white text-xl font-semibold mb-4">Coming Soon</h3>
-            <p className="text-gray-300 mb-6">
-              Movie browsing, favorites, and more features are being developed!
-            </p>
+            <h3 className="text-white text-xl font-semibold mb-4">Popular Movies</h3>
+            
+            {moviesLoading && (
+              <div className="text-gray-300">
+                <div className="animate-pulse">Loading popular movies...</div>
+              </div>
+            )}
+            
+            {moviesError && (
+              <div className="bg-red-900/50 border border-red-700 text-red-200 px-4 py-3 rounded-md">
+                Failed to load movies: {moviesError.message}
+              </div>
+            )}
+            
+            {moviesData && (
+              <div className="space-y-4">
+                <p className="text-gray-300 mb-4">
+                  Found {moviesData.total_results} popular movies. Showing page {moviesData.page} of {moviesData.total_pages}.
+                </p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto">
+                  {moviesData.results.slice(0, 6).map((movie) => (
+                    <div key={movie.id} className="bg-gray-800/50 border border-gray-600 rounded-lg p-4">
+                      <h4 className="text-white font-medium text-sm mb-2 truncate">{movie.title}</h4>
+                      <p className="text-gray-300 text-xs mb-2">Release: {movie.release_date || 'Unknown'}</p>
+                      <p className="text-gray-300 text-xs mb-2">Rating: ⭐ {movie.vote_average?.toFixed(1) || 'N/A'}</p>
+                      <p className="text-gray-400 text-xs line-clamp-3">{movie.overview || 'No description available.'}</p>
+                    </div>
+                  ))}
+                </div>
+                
+                {moviesData.results.length > 6 && (
+                  <p className="text-gray-400 text-sm mt-4">
+                    And {moviesData.results.length - 6} more movies...
+                  </p>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Logout Button */}
