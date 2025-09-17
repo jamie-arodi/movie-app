@@ -79,6 +79,7 @@ class MovieHttpClient {
     return this.fetchFromAPI(`/search/movie?query=${encodeURIComponent(query)}&page=${page}`);
   }
 
+  //is this method really necessary if we are loading the image via src???
   getImageUrl(imagePath: string, size: string = 'w500'): string {
     return `https://image.tmdb.org/t/p/${size}${imagePath}`;
   }
