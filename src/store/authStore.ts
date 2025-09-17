@@ -24,7 +24,7 @@ interface AuthState {
 }
 
 const initialState = {
-  currentView: 'home' as ViewType,
+  currentView: 'login' as ViewType,
   isAuthenticated: false,
   user: null,
   accessToken: null,
@@ -53,7 +53,7 @@ export const useAuthStore = create<AuthState>()(
       clearAuthentication: () => {
         set({
           ...initialState,
-          currentView: 'home',
+          currentView: 'login',
         })
       },
       

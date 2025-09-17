@@ -261,7 +261,7 @@ describe('Authentication Workflows', () => {
       expect(storeResult.current.user).toBe(null)
       expect(storeResult.current.accessToken).toBe(null)
       expect(storeResult.current.refreshToken).toBe(null)
-      expect(storeResult.current.currentView).toBe('home')
+      expect(storeResult.current.currentView).toBe('login')
 
       // Verify localStorage was cleared
       expect(localStorage.removeItem).toHaveBeenCalledWith('accessToken')
@@ -320,7 +320,7 @@ describe('Authentication Workflows', () => {
 
       // Initial state - unauthenticated
       expect(storeResult.current.isAuthenticated).toBe(false)
-      expect(storeResult.current.currentView).toBe('home')
+      expect(storeResult.current.currentView).toBe('login')
 
       // Perform login
       await act(async () => {
@@ -362,7 +362,7 @@ describe('Authentication Workflows', () => {
 
       // Final state - unauthenticated
       expect(storeResult.current.isAuthenticated).toBe(false)
-      expect(storeResult.current.currentView).toBe('home')
+      expect(storeResult.current.currentView).toBe('login')
       expect(storeResult.current.user).toBe(null)
     })
   })
