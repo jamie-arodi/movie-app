@@ -5,21 +5,26 @@ import { usePopularMovies } from '../hooks/useMovies'
 import { Search, Film, LogOut, User, Menu, Star, Calendar } from 'lucide-react'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
+import { MovieModal } from './MovieModal'
+import type { Movie } from '../types/movie'
 
 export const Home: React.FC = () => {
   const { user } = useAuthStore()
   const [logoutError, setLogoutError] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [selectedMovie, setSelectedMovie] = useState<any>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const logoutMutation = useLogout()
 
   const { data: moviesData, isLoading: moviesLoading, error: moviesError } = usePopularMovies(1)
 
+  //this should filter movies based on genre. Actual movie searches should be queried from the DB
   const filteredMovies = useMemo(() => {
     if (!moviesData?.results) return []
-    
+
     if (!searchQuery) return moviesData.results
-    
+
     return moviesData.results.filter(movie =>
       movie.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       movie.overview.toLowerCase().includes(searchQuery.toLowerCase())
@@ -33,6 +38,16 @@ export const Home: React.FC = () => {
     } catch (error: any) {
       setLogoutError(error?.msg || 'Logout failed')
     }
+  }
+
+  const handleMovieClick = (movie: Movie) => {
+    setSelectedMovie(movie)
+    setIsModalOpen(true)
+  }
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false)
+    setSelectedMovie(null)
   }
 
   return (
@@ -61,7 +76,7 @@ export const Home: React.FC = () => {
               <div className="hidden sm:block text-sm text-gray-300">
                 Welcome back, <span className="text-white font-medium">{user?.user_metadata?.firstName || 'User'}</span>
               </div>
-              
+
               {/* User Menu */}
               <div className="relative">
                 <Button
@@ -72,7 +87,7 @@ export const Home: React.FC = () => {
                 >
                   <User className="h-5 w-5" />
                 </Button>
-                
+
                 {isMenuOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-gray-900 border border-gray-700 rounded-md shadow-lg z-50">
                     <div className="px-4 py-3 border-b border-gray-700">
@@ -109,14 +124,14 @@ export const Home: React.FC = () => {
 
       {/* Hero Section */}
       <section className="relative h-[60vh] flex items-center justify-center">
-        <div 
+        <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
             backgroundImage: `url('https://images.unsplash.com/photo-1524712245354-2c4e5e7121c0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb3ZpZSUyMHRoZWF0ZXIlMjBjaW5lbWF8ZW58MXx8fHwxNzU4MDIzMTI3fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral')`
           }}
         />
         <div className="absolute inset-0 bg-black/60" />
-        
+
         <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
           <h1 className="text-white text-4xl md:text-6xl font-bold mb-4">
             Unlimited movies, TV shows, and more
@@ -124,7 +139,7 @@ export const Home: React.FC = () => {
           <p className="text-gray-300 text-lg md:text-xl mb-8">
             Watch anywhere. Cancel anytime.
           </p>
-          
+
           {/* Search Bar */}
           <div className="flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto mb-8">
             <div className="relative flex-1">
@@ -171,7 +186,11 @@ export const Home: React.FC = () => {
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
             {filteredMovies.map((movie) => (
-              <div key={movie.id} className="group cursor-pointer">
+              <div
+                key={movie.id}
+                className="group cursor-pointer"
+                onClick={() => handleMovieClick(movie)}
+              >
                 <div className="relative aspect-[2/3] bg-gray-800 rounded-lg overflow-hidden mb-3 group-hover:scale-105 transition-transform duration-300">
                   {movie.poster_path ? (
                     <img
@@ -184,14 +203,14 @@ export const Home: React.FC = () => {
                       <Film className="h-12 w-12 text-gray-600" />
                     </div>
                   )}
-                  
+
                   {/* Rating Badge */}
                   <div className="absolute top-2 right-2 bg-black/80 rounded-full px-2 py-1 flex items-center space-x-1">
                     <Star className="h-3 w-3 text-yellow-400 fill-current" />
                     <span className="text-xs font-medium">{movie.vote_average?.toFixed(1)}</span>
                   </div>
                 </div>
-                
+
                 <div>
                   <h3 className="font-semibold text-sm mb-1 line-clamp-2 group-hover:text-red-500 transition-colors">
                     {movie.title}
@@ -252,7 +271,7 @@ export const Home: React.FC = () => {
               </ul>
             </div>
           </div>
-          
+
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
             <div className="flex items-center justify-center space-x-2 mb-2">
               <Film className="h-5 w-5 text-red-500" />
@@ -262,6 +281,13 @@ export const Home: React.FC = () => {
           </div>
         </div>
       </footer>
+
+      {/* Movie Modal */}
+      <MovieModal
+        movie={selectedMovie}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+      />
     </div>
   )
 }
