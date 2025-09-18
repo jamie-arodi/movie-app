@@ -33,7 +33,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       - run: npm ci
-      - run: npm run test:run
+      - run: npx vitest run --reporter=verbose
 
   deploy:
     name: Deploy to Vercel
