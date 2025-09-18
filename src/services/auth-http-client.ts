@@ -3,6 +3,27 @@ import type { AuthResponse, LoginCredentials, SignupCredentials, AuthError } fro
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+interface LoginRequestBody {
+  email: string;
+  password: string;
+}
+
+interface SignupRequestBody {
+  email: string;
+  password: string;
+  data: {
+    firstName: string;
+    lastName: string;
+    name: string;
+  };
+}
+
+interface RefreshTokenRequestBody {
+  refresh_token: string;
+}
+
+type AuthRequestBody = LoginRequestBody | SignupRequestBody | RefreshTokenRequestBody;
+
 class AuthHttpClient {
   private getHeaders(): Record<string, string> {
     return {
@@ -13,7 +34,7 @@ class AuthHttpClient {
     };
   }
 
-  private async makeRequest(endpoint: string, body: any): Promise<AuthResponse> {
+  private async makeRequest(endpoint: string, body: AuthRequestBody): Promise<AuthResponse> {
     const response = await fetch(`${SUPABASE_URL}${endpoint}`, {
       method: 'POST',
       headers: this.getHeaders(),
@@ -52,7 +73,7 @@ class AuthHttpClient {
   }
 
   async signup(credentials: SignupCredentials): Promise<AuthResponse> {
-    const body: any = {
+    const body: SignupRequestBody = {
       email: credentials.email,
       password: credentials.password,
       data: {

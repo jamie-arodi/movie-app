@@ -8,6 +8,7 @@ import { Button } from './ui/button'
 import { Input } from './ui/input'
 import { MovieModal } from './MovieModal'
 import type { Movie } from '../types/movie'
+import type { AuthError } from '../types/auth'
 
 export const Home: React.FC = () => {
   const { user } = useAuthStore()
@@ -15,15 +16,15 @@ export const Home: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [selectedMovie, setSelectedMovie] = useState<any>(null)
+  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const logoutMutation = useLogout()
 
-  // Debounce search query to avoid excessive API calls
+  //make this a hook
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchQuery(searchQuery.trim())
-    }, 500) // 500ms delay
+    }, 500)
 
     return () => clearTimeout(timer)
   }, [searchQuery])
@@ -31,7 +32,7 @@ export const Home: React.FC = () => {
   const { data: moviesData, isLoading: moviesLoading, error: moviesError } = usePopularMovies(1)
   const { data: searchData, isLoading: searchLoading, error: searchError } = useSearchMovies(debouncedSearchQuery)
 
-  // Use search results if there's a search query, otherwise use popular movies
+  //this could also be a function and tested
   const displayedMovies = useMemo(() => {
     if (debouncedSearchQuery && searchData?.results) {
       return searchData.results
@@ -46,8 +47,9 @@ export const Home: React.FC = () => {
     setLogoutError(null)
     try {
       await logoutMutation.mutateAsync()
-    } catch (error: any) {
-      setLogoutError(error?.msg || 'Logout failed')
+    } catch (error) {
+      const authError = error as AuthError
+      setLogoutError(authError?.msg || 'Logout failed')
     }
   }
 

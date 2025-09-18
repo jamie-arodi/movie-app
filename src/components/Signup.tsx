@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useSignup } from '../hooks/useAuth'
 import { useAuthStore } from '../store/authStore'
-import type { SignupFormData } from '../types/auth'
+import type { SignupFormData, AuthError } from '../types/auth'
 import { Film } from 'lucide-react'
 
 interface SignupProps {
@@ -31,11 +31,12 @@ export const Signup: React.FC<SignupProps> = ({ onSuccess }) => {
     }
 
     try {
-      const { confirmPassword, ...signupData } = credentials
+      const { confirmPassword: _confirmPassword, ...signupData } = credentials
       await signupMutation.mutateAsync(signupData)
       onSuccess?.()
-    } catch (error: any) {
-      setError(error?.msg || 'Signup failed')
+    } catch (error) {
+      const authError = error as AuthError
+      setError(authError?.msg || 'Signup failed')
     }
   }
 

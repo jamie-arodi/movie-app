@@ -7,7 +7,6 @@ import { useAuthStore } from '../store/authStore'
 import { authHttpClient } from '../services/auth-http-client'
 import type { AuthResponse, LoginCredentials, SignupCredentials } from '../types/auth'
 
-// Mock the auth http client
 vi.mock('../services/auth-http-client')
 
 const mockAuthResponse: AuthResponse = {
@@ -41,7 +40,6 @@ const mockAuthResponse: AuthResponse = {
   }
 }
 
-// Helper function to create a wrapper with QueryClient
 const createWrapper = () => {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -78,13 +76,11 @@ describe('Authentication Workflows', () => {
   })
 
   afterEach(() => {
-    // Clean up after each test
     useAuthStore.getState().reset()
   })
 
   describe('Login Workflow', () => {
     it('should update authStore state when login is successful', async () => {
-      // Mock successful login response
       vi.mocked(authHttpClient.login).mockResolvedValueOnce(mockAuthResponse)
 
       const { result } = renderHook(() => useLogin(), { wrapper })

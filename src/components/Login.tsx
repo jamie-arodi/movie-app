@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useLogin } from '../hooks/useAuth'
 import { useAuthStore } from '../store/authStore'
-import type { LoginCredentials } from '../types/auth'
+import type { AuthError, LoginCredentials } from '../types/auth'
 import { Film } from 'lucide-react'
 
 interface LoginProps {
@@ -21,11 +21,12 @@ export const Login: React.FC<LoginProps> = ({ onSuccess }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
-    
+
     try {
       await loginMutation.mutateAsync(credentials)
       onSuccess?.()
-    } catch (error: any) {
+    } catch (err) {
+      const error = err as AuthError
       setError(error?.msg || 'Login failed')
     }
   }
