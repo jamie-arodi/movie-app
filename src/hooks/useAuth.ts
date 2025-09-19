@@ -12,7 +12,7 @@ export const useLogin = () => {
     onSuccess: (data: AuthResponse) => {
       queryClient.setQueryData(['auth', 'user'], data.user)
       
-      setAuthenticatedUser(data.user, data.access_token, data.refresh_token)
+      setAuthenticatedUser(data.user, data.access_token, data.refresh_token, data.expires_at)
       
       localStorage.setItem('accessToken', data.access_token)
       localStorage.setItem('refreshToken', data.refresh_token)
@@ -29,7 +29,7 @@ export const useSignup = () => {
     onSuccess: (data: AuthResponse) => {
       queryClient.setQueryData(['auth', 'user'], data.user)
       
-      setAuthenticatedUser(data.user, data.access_token, data.refresh_token)
+      setAuthenticatedUser(data.user, data.access_token, data.refresh_token, data.expires_at)
 
       localStorage.setItem('accessToken', data.access_token)
       localStorage.setItem('refreshToken', data.refresh_token)
@@ -51,9 +51,6 @@ export const useLogout = () => {
       queryClient.removeQueries({ queryKey: ['auth'] })
       
       clearAuthentication()
-      
-      localStorage.removeItem('accessToken')
-      localStorage.removeItem('refreshToken')
     }
   })
 }

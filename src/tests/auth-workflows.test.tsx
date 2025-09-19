@@ -206,7 +206,8 @@ describe('Authentication Workflows', () => {
         storeResult.current.setAuthenticatedUser(
           mockAuthResponse.user,
           mockAuthResponse.access_token,
-          mockAuthResponse.refresh_token
+          mockAuthResponse.refresh_token,
+          mockAuthResponse.expires_at
         )
       })
 
@@ -250,7 +251,8 @@ describe('Authentication Workflows', () => {
         storeResult.current.setAuthenticatedUser(
           mockAuthResponse.user,
           mockAuthResponse.access_token,
-          mockAuthResponse.refresh_token
+          mockAuthResponse.refresh_token,
+          mockAuthResponse.expires_at
         )
       })
 
@@ -313,7 +315,8 @@ describe('Authentication Workflows', () => {
         storeResult.current.setAuthenticatedUser(
           mockAuthResponse.user,
           mockAuthResponse.access_token,
-          mockAuthResponse.refresh_token
+          mockAuthResponse.refresh_token,
+          mockAuthResponse.expires_at
         )
       })
 
