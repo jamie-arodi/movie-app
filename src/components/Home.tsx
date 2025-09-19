@@ -11,7 +11,7 @@ import type { Movie } from '../types/movie'
 import type { AuthError } from '../types/auth'
 
 export const Home: React.FC = () => {
-  const { user } = useAuthStore()
+  const { user, clearAuthentication, isTokenExpired } = useAuthStore()
   const [logoutError, setLogoutError] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('')
@@ -45,6 +45,12 @@ export const Home: React.FC = () => {
 
   const handleLogoutClick = async () => {
     setLogoutError(null)
+    
+    if (isTokenExpired()) {
+      clearAuthentication()
+      return
+    }
+  
     try {
       await logoutMutation.mutateAsync()
     } catch (error) {
