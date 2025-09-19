@@ -57,17 +57,3 @@ export const useLogout = () => {
     }
   })
 }
-
-export const useRefreshToken = () => {
-  const { setTokens } = useAuthStore()
-  
-  return useMutation<AuthResponse, AuthError, string>({
-    mutationFn: (refreshToken: string) => authHttpClient.refreshToken(refreshToken),
-    onSuccess: (data: AuthResponse) => {
-      setTokens(data.access_token, data.refresh_token)
-      
-      localStorage.setItem('accessToken', data.access_token)
-      localStorage.setItem('refreshToken', data.refresh_token)
-    }
-  })
-}
