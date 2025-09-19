@@ -18,6 +18,8 @@ export const Home: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [allMovies, setAllMovies] = useState<Movie[]>([])
   const logoutMutation = useLogout()
 
   //make this a hook
@@ -29,19 +31,68 @@ export const Home: React.FC = () => {
     return () => clearTimeout(timer)
   }, [searchQuery])
 
-  const { data: moviesData, isLoading: moviesLoading, error: moviesError } = usePopularMovies(1)
+  const { data: moviesData, isLoading: moviesLoading, error: moviesError } = usePopularMovies(currentPage)
   const { data: searchData, isLoading: searchLoading, error: searchError } = useSearchMovies(debouncedSearchQuery)
+
+  // Update allMovies when new page data is fetched
+  useEffect(() => {
+    if (moviesData?.results && !debouncedSearchQuery) {
+      if (currentPage === 1) {
+        // First page - replace all movies
+        setAllMovies(moviesData.results)
+      } else {
+        // Additional pages - append to existing movies
+        setAllMovies(prev => [...prev, ...moviesData.results])
+      }
+    }
+  }, [moviesData, currentPage, debouncedSearchQuery])
+
+  // Reset to first page when search query changes
+  useEffect(() => {
+    if (debouncedSearchQuery) {
+      setCurrentPage(1)
+      setAllMovies([])
+    } else {
+      setCurrentPage(1)
+    }
+  }, [debouncedSearchQuery])
 
   //this could also be a function and tested
   const displayedMovies = useMemo(() => {
     if (debouncedSearchQuery && searchData?.results) {
       return searchData.results
     }
-    return moviesData?.results || []
-  }, [debouncedSearchQuery, searchData, moviesData])
+    return allMovies
+  }, [debouncedSearchQuery, searchData, allMovies])
 
   const isLoading = debouncedSearchQuery ? searchLoading : moviesLoading
   const currentError = debouncedSearchQuery ? searchError : moviesError
+
+  // Check if there are more pages to load
+  const hasMorePages = moviesData && currentPage < moviesData.total_pages
+  const canLoadMore = !debouncedSearchQuery && hasMorePages && !isLoading
+
+  const handleLoadMore = () => {
+    if (canLoadMore) {
+      setCurrentPage(prev => prev + 1)
+    }
+  }
+
+  // Scroll to the newly loaded content when page changes
+  useEffect(() => {
+    if (currentPage > 1 && !isLoading) {
+      // Small delay to ensure content is rendered
+      setTimeout(() => {
+        const movieGrid = document.querySelector('[data-movie-grid]')
+        if (movieGrid) {
+          const newMoviesStart = movieGrid.children[(currentPage - 1) * 20] // Assuming 20 movies per page
+          if (newMoviesStart) {
+            newMoviesStart.scrollIntoView({ behavior: 'smooth', block: 'start' })
+          }
+        }
+      }, 100)
+    }
+  }, [currentPage, isLoading])
 
   const handleLogoutClick = async () => {
     setLogoutError(null)
@@ -188,9 +239,17 @@ export const Home: React.FC = () => {
         <div className="mb-8">
           <h2 className="text-2xl font-bold mb-2">
             {debouncedSearchQuery ? 'Search Results' : 'Popular Movies'}
+            {displayedMovies.length > 0 && (
+              <span className="text-lg text-gray-400 ml-2">({displayedMovies.length} movies)</span>
+            )}
           </h2>
           <p className="text-gray-400">
-            {debouncedSearchQuery ? `Results for "${debouncedSearchQuery}"` : 'Trending now'}
+            {debouncedSearchQuery 
+              ? `Results for "${debouncedSearchQuery}"` 
+              : moviesData 
+                ? `Trending now • Page ${currentPage} of ${moviesData.total_pages}`
+                : 'Trending now'
+            }
           </p>
         </div>
 
@@ -205,7 +264,7 @@ export const Home: React.FC = () => {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6" data-movie-grid>
             {displayedMovies.map((movie: Movie) => (
               <div 
                 key={movie.id} 
@@ -251,6 +310,29 @@ export const Home: React.FC = () => {
             <Film className="h-16 w-16 text-gray-600 mx-auto mb-4" />
             <h3 className="text-xl font-semibold mb-2">No movies found</h3>
             <p className="text-gray-400">Try searching for something else</p>
+          </div>
+        )}
+
+        {/* Load More Button */}
+        {canLoadMore && (
+          <div className="text-center mt-12">
+            <Button
+              onClick={handleLoadMore}
+              disabled={isLoading}
+              className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-semibold"
+            >
+              {isLoading ? 'Loading...' : 'Load More Movies'}
+            </Button>
+          </div>
+        )}
+
+        {/* Show loading indicator when loading more pages */}
+        {isLoading && currentPage > 1 && (
+          <div className="text-center mt-8">
+            <div className="inline-flex items-center space-x-2 text-gray-400">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-500"></div>
+              <span>Loading more movies...</span>
+            </div>
           </div>
         )}
       </main>      {/* Footer */}
