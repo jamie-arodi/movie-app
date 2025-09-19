@@ -2,6 +2,9 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { authHttpClient } from '../services/auth-http-client'
 import type { AuthResponse, LoginCredentials, SignupCredentials } from '../types/auth'
 
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
+
 const mockAuthResponse: AuthResponse = {
   access_token: 'mock-access-token',
   token_type: 'bearer',
@@ -52,13 +55,13 @@ describe('AuthHttpClient', () => {
     const result = await authHttpClient.login(credentials)
 
     expect(globalThis.fetch).toHaveBeenCalledWith(
-      'https://njrnzecqmbtgyhybdmma.supabase.co/auth/v1/token?grant_type=password',
+      `${SUPABASE_URL}/auth/v1/token?grant_type=password`,
       expect.objectContaining({
         method: 'POST',
         headers: expect.objectContaining({
           'Content-Type': 'application/json',
-          'apiKey': expect.any(String),
-          'Authorization': expect.stringContaining('Bearer')
+          'apiKey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
         }),
         body: JSON.stringify({
           email: 'test@example.com',
@@ -88,9 +91,14 @@ describe('AuthHttpClient', () => {
     const result = await authHttpClient.signup(credentials)
 
     expect(globalThis.fetch).toHaveBeenCalledWith(
-      'https://njrnzecqmbtgyhybdmma.supabase.co/auth/v1/signup',
+      `${SUPABASE_URL}/auth/v1/signup`,
       expect.objectContaining({
         method: 'POST',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+          'apiKey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+        }),
         body: JSON.stringify({
           email: 'newuser@example.com',
           password: 'newpassword123',
@@ -130,9 +138,14 @@ describe('AuthHttpClient', () => {
     const result = await authHttpClient.refreshToken('mock-refresh-token')
 
     expect(globalThis.fetch).toHaveBeenCalledWith(
-      'https://njrnzecqmbtgyhybdmma.supabase.co/auth/v1/token?grant_type=refresh_token',
+      `${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`,
       expect.objectContaining({
         method: 'POST',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+          'apiKey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+        }),
         body: JSON.stringify({
           refresh_token: 'mock-refresh-token'
         })
@@ -150,10 +163,12 @@ describe('AuthHttpClient', () => {
     await expect(authHttpClient.logout('mock-access-token')).resolves.toBeUndefined()
 
     expect(globalThis.fetch).toHaveBeenCalledWith(
-      'https://njrnzecqmbtgyhybdmma.supabase.co/auth/v1/logout',
+      `${SUPABASE_URL}/auth/v1/logout`,
       expect.objectContaining({
         method: 'POST',
         headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+          'apiKey': SUPABASE_ANON_KEY,
           'Authorization': 'Bearer mock-access-token'
         })
       })
