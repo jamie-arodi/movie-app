@@ -1,12 +1,24 @@
-import './App.css'
+import { useAuthStore } from './store/authStore'
+import { Login } from './components/Login'
+import { Signup } from './components/Signup'
+import { Home } from './components/Home'
+
 
 function App() {
-  return (
-    <div className="app">
-      <h1>Movie App</h1>
-      <p>Welcome to your movie application!</p>
-    </div>
-  )
+  const { 
+    currentView, 
+    isAuthenticated, 
+  } = useAuthStore()
+
+  if (isAuthenticated) {
+    return <Home />
+  }
+
+  if (currentView === 'signup') {
+    return <Signup />
+  }
+
+  return <Login />
 }
 
 export default App
