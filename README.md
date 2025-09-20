@@ -1,6 +1,6 @@
 # 🎬 MovieApp
 
-<img width="2032" height="1283" alt="Screenshot 2025-09-20 at 11 35 05" src="https://github.com/user-attachments/assets/125f4a14-4176-4f7f-bc5a-64fdff357b24" />
+<img width="1712" height="1036" alt="Screenshot 2025-09-20 at 11 49 13" src="https://github.com/user-attachments/assets/751d3aa6-4810-4e2e-bb05-f3ab8bfe3986" />
 
 A modern, full-featured movie discovery application built with React 19, TypeScript, and The Movie Database (TMDB) API. Features user authentication, movie search, pagination, and a clean, responsive design.
 
