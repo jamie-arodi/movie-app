@@ -1,38 +1,12 @@
-import React, { createContext, useContext, useState, useEffect, useMemo } from 'react'
+import React, { createContext, useContext, useState, useMemo } from 'react'
 import { usePopularMovies } from '../hooks/useMovies'
 import { useSearchMovies } from '../hooks/useSearchMovies'
+import { useDebounce } from '../hooks/useDebounce'
+import { useMoviesPagination } from '../hooks/useMoviesPagination'
+import { useSearchReset } from '../hooks/useSearchReset'
+import { useAutoScroll } from '../hooks/useAutoScroll'
 import type { Movie } from '../types/movie'
-
-interface HomeContextType {
-  // Search state
-  searchQuery: string
-  setSearchQuery: (query: string) => void
-  debouncedSearchQuery: string
-  
-  // Movie data
-  displayedMovies: Movie[]
-  isLoading: boolean
-  currentError: Error | null
-  
-  // Pagination
-  currentPage: number
-  setCurrentPage: (page: number) => void
-  hasMorePages: boolean
-  canLoadMore: boolean
-  handleLoadMore: () => void
-  
-  // Movie modal
-  selectedMovie: Movie | null
-  setSelectedMovie: (movie: Movie | null) => void
-  isModalOpen: boolean
-  setIsModalOpen: (open: boolean) => void
-  handleMovieClick: (movie: Movie) => void
-  handleCloseModal: () => void
-  
-  // UI state
-  isMenuOpen: boolean
-  setIsMenuOpen: (open: boolean) => void
-}
+import type { HomeContextType, HomeProviderProps } from '../types/home'
 
 const HomeContext = createContext<HomeContextType | undefined>(undefined)
 
@@ -44,79 +18,35 @@ export const useHomeContext = () => {
   return context
 }
 
-interface HomeProviderProps {
-  children: React.ReactNode
-}
-
 export const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
-  // Search state
   const [searchQuery, setSearchQuery] = useState('')
-  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('')
+  const debouncedSearchQuery = useDebounce(searchQuery.trim(), 500)
   
-  // Pagination state
   const [currentPage, setCurrentPage] = useState(1)
-  const [allMovies, setAllMovies] = useState<Movie[]>([])
-  
-  // Modal state
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  
-  // UI state
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-  // Debounce search query
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearchQuery(searchQuery.trim())
-    }, 500)
-
-    return () => clearTimeout(timer)
-  }, [searchQuery])
-
-  // Fetch data
   const { data: moviesData, isLoading: moviesLoading, error: moviesError } = usePopularMovies(currentPage)
   const { data: searchData, isLoading: searchLoading, error: searchError } = useSearchMovies(debouncedSearchQuery)
 
-  // Update allMovies when new page data is fetched
-  useEffect(() => {
-    if (moviesData?.results && !debouncedSearchQuery) {
-      if (currentPage === 1) {
-        // First page - replace all movies
-        setAllMovies(moviesData.results)
-      } else {
-        // Additional pages - append to existing movies
-        setAllMovies(prev => [...prev, ...moviesData.results])
-      }
-    }
-  }, [moviesData, currentPage, debouncedSearchQuery])
+  const { allMovies, setAllMovies } = useMoviesPagination({
+    moviesData,
+    currentPage,
+    debouncedSearchQuery
+  })
 
-  // Reset to first page when search query changes
-  useEffect(() => {
-    if (debouncedSearchQuery) {
-      setCurrentPage(1)
-      setAllMovies([])
-    } else {
-      setCurrentPage(1)
-    }
-  }, [debouncedSearchQuery])
+  useSearchReset({
+    debouncedSearchQuery,
+    setCurrentPage,
+    setAllMovies
+  })
 
-  // Scroll to the newly loaded content when page changes
-  useEffect(() => {
-    if (currentPage > 1 && !moviesLoading) {
-      // Small delay to ensure content is rendered
-      setTimeout(() => {
-        const movieGrid = document.querySelector('[data-movie-grid]')
-        if (movieGrid) {
-          const newMoviesStart = movieGrid.children[(currentPage - 1) * 20] // Assuming 20 movies per page
-          if (newMoviesStart) {
-            newMoviesStart.scrollIntoView({ behavior: 'smooth', block: 'start' })
-          }
-        }
-      }, 100)
-    }
-  }, [currentPage, moviesLoading])
+  useAutoScroll({
+    currentPage,
+    isLoading: moviesLoading
+  })
 
-  // Computed values
   const displayedMovies = useMemo(() => {
     if (debouncedSearchQuery && searchData?.results) {
       return searchData.results
@@ -127,7 +57,6 @@ export const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
   const isLoading = debouncedSearchQuery ? searchLoading : moviesLoading
   const currentError = debouncedSearchQuery ? searchError : moviesError
 
-  // Check if there are more pages to load
   const hasMorePages = Boolean(moviesData && currentPage < moviesData.total_pages)
   const canLoadMore = !debouncedSearchQuery && hasMorePages && !isLoading
 
@@ -148,32 +77,23 @@ export const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
   }
 
   const contextValue: HomeContextType = {
-    // Search state
     searchQuery,
     setSearchQuery,
     debouncedSearchQuery,
-    
-    // Movie data
     displayedMovies,
     isLoading,
     currentError,
-    
-    // Pagination
     currentPage,
     setCurrentPage,
     hasMorePages,
     canLoadMore,
     handleLoadMore,
-    
-    // Movie modal
     selectedMovie,
     setSelectedMovie,
     isModalOpen,
     setIsModalOpen,
     handleMovieClick,
     handleCloseModal,
-    
-    // UI state
     isMenuOpen,
     setIsMenuOpen,
   }
