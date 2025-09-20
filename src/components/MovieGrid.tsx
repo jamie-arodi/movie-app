@@ -1,7 +1,7 @@
 import React from 'react'
 import { Film, Star, Calendar } from 'lucide-react'
 import { Button } from './ui/button'
-import { useHomeContext } from '../contexts/HomeContext'
+import { useHomeContext } from '../hooks/useHomeContext'
 import type { Movie } from '../types/movie'
 
 export const MovieGrid: React.FC = () => {

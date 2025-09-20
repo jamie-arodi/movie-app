@@ -1,22 +1,13 @@
-import React, { createContext, useContext, useState, useMemo } from 'react'
+import React, { useState, useMemo } from 'react'
 import { usePopularMovies } from '../hooks/useMovies'
 import { useSearchMovies } from '../hooks/useSearchMovies'
 import { useDebounce } from '../hooks/useDebounce'
 import { useMoviesPagination } from '../hooks/useMoviesPagination'
 import { useSearchReset } from '../hooks/useSearchReset'
 import { useAutoScroll } from '../hooks/useAutoScroll'
+import { HomeContext } from './HomeContextDefinition'
 import type { Movie } from '../types/movie'
 import type { HomeContextType, HomeProviderProps } from '../types/home'
-
-const HomeContext = createContext<HomeContextType | undefined>(undefined)
-
-export const useHomeContext = () => {
-  const context = useContext(HomeContext)
-  if (!context) {
-    throw new Error('useHomeContext must be used within a HomeProvider')
-  }
-  return context
-}
 
 export const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
   const [searchQuery, setSearchQuery] = useState('')

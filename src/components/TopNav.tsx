@@ -3,7 +3,7 @@ import { useAuthStore } from '../store/authStore'
 import { useLogout } from '../hooks/useAuth'
 import { Film, LogOut, User, Menu } from 'lucide-react'
 import { Button } from './ui/button'
-import { useHomeContext } from '../contexts/HomeContext'
+import { useHomeContext } from '../hooks/useHomeContext'
 import type { AuthError } from '../types/auth'
 
 export const TopNav: React.FC = () => {

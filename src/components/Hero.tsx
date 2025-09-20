@@ -1,7 +1,7 @@
 import React from 'react'
 import { Search } from 'lucide-react'
 import { Input } from './ui/input'
-import { useHomeContext } from '../contexts/HomeContext'
+import { useHomeContext } from '../hooks/useHomeContext'
 
 export const Hero: React.FC = () => {
   const { searchQuery, setSearchQuery } = useHomeContext()

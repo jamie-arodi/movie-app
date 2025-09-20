@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { X, Star, Calendar, Users, Film } from 'lucide-react'
 import { Button } from './ui/button'
-import { useHomeContext } from '../contexts/HomeContext'
+import { useHomeContext } from '../hooks/useHomeContext'
 
 export const MovieModal: React.FC = () => {
   const { selectedMovie, isModalOpen, handleCloseModal } = useHomeContext()
