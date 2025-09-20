@@ -37,15 +37,6 @@ export const TopNav: React.FC = () => {
             <Film className="h-8 w-8 text-red-500" />
             <span className="text-xl font-bold">Movie App</span>
           </div>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            <a href="#" className="text-white hover:text-red-500 transition-colors">Home</a>
-            <a href="#" className="text-gray-300 hover:text-red-500 transition-colors">Movies</a>
-            <a href="#" className="text-gray-300 hover:text-red-500 transition-colors">TV Shows</a>
-            <a href="#" className="text-gray-300 hover:text-red-500 transition-colors">My List</a>
-          </nav>
-
           {/* Search and User Controls */}
           <div className="flex items-center space-x-4">
             {/* Welcome Message */}
