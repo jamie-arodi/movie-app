@@ -1,0 +1,78 @@
+{
+  "name": "MovieApp Dev Container",
+  "image": "node:20",
+
+  // Features to add to the dev container
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+
+  // Use 'forwardPorts' to make a list of ports inside the container available locally
+  "forwardPorts": [5173, 5174],
+
+  // Configure port attributes for Vite dev server
+  "portsAttributes": {
+    "5173": {
+      "label": "Vite Dev Server",
+      "onAutoForward": "notify"
+    },
+    "5174": {
+      "label": "Vite Preview",
+      "onAutoForward": "notify"
+    }
+  },
+
+  // Use 'postCreateCommand' to run commands after the container is created
+  "postCreateCommand": "npm install",
+
+  // Use 'postStartCommand' to run commands after the container starts  
+  "postStartCommand": "bash ./.devcontainer/setup.sh",
+
+  // Configure tool-specific properties
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit"
+        },
+        "typescript.preferences.importModuleSpecifier": "relative",
+        "emmet.includeLanguages": {
+          "typescript": "html",
+          "typescriptreact": "html"
+        }
+      },
+      "extensions": [
+        "bradlc.vscode-tailwindcss",
+        "ms-vscode.vscode-typescript-next",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "ms-vscode.vscode-json",
+        "formulahendry.auto-rename-tag",
+        "christian-kohler.path-intellisense",
+        "vitest.explorer",
+        "usernamehw.errorlens"
+      ]
+    }
+  },
+
+  // Set environment variables
+  "containerEnv": {
+    "NODE_ENV": "development"
+  },
+
+  // Run as root initially (node image default)
+  "remoteUser": "root",
+
+  // Lifecycle scripts
+  "initializeCommand": "echo 'Initializing dev container for MovieApp...'",
+  "onCreateCommand": "echo 'Dev container created successfully!'",
+
+  // Dev container metadata
+  "hostRequirements": {
+    "memory": "4gb",
+    "storage": "10gb"
+  }
+}

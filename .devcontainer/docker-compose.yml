@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        # Use Node 20 as base
+        VARIANT: "20"
+        # Install additional OS packages
+        INSTALL_ZSH: "true"
+        UPGRADE_PACKAGES: "true"
+    
+    volumes:
+      - ../..:/workspaces:cached
+      - node_modules:/workspaces/movie-app/node_modules
+    
+    # Overrides default command so things don't shut down after the process ends
+    command: sleep infinity
+    
+    # Environment variables
+    environment:
+      - NODE_ENV=development
+    
+    # Port forwarding for Vite
+    ports:
+      - "5173:5173"
+      - "5174:5174"
+    
+    # Use "forwardPorts" in **devcontainer.json** for best results
+
+volumes:
+  node_modules:
