@@ -23,14 +23,27 @@ A modern, full-featured movie discovery application built with React 19, TypeScr
 
 ## 🚀 Quick Start
 
-### Prerequisites
+### 🐳 Dev Container (Recommended)
+
+The fastest way to get started is using the pre-configured development container that includes all dependencies and tools:
+
+- **VS Code**: Install the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers), open this repository, and select "Reopen in Container"
+- **GitHub Codespaces**: Click the "Code" button → "Codespaces" tab → "Create codespace on main"
+
+📖 **For detailed dev container setup and troubleshooting, see [.devcontainer/README.md](.devcontainer/README.md)**
+
+### 🛠️ Manual Setup
+
+If you prefer to set up the development environment manually:
+
+#### Prerequisites
 
 - **Node.js** (version 20.19+ or 22.12+)
 - **npm** or **yarn**
 - **TMDB API Key** - [Get yours here](https://www.themoviedb.org/settings/api)
 - **Supabase Project** - [Create one here](https://supabase.com)
 
-### Installation
+#### Installation
 
 1. **Clone the repository**
    ```bash
